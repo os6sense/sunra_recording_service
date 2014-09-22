@@ -1,0 +1,10 @@
+storage_dir: /mnt/RAID/VIDEO/NEWSessions
+additional_dir:
+url: http://localhost:8090/livehq.flv
+port: 8090
+extension: MP4
+audio: -c:a copy
+video: -c:v copy
+ffmpeg: ffmpeg
+ffmpeg_opts: -movflags faststart
+ffmpeg_verb: -v 0

@@ -1,0 +1,15 @@
+storage_dir: /mnt/RAID/VIDEO/NEWSessions
+additional_dir: hls
+url: http://localhost:8090/livehq.flv
+port: 8090
+extension: M3U8
+audio: -c:a libfdk_aac -ac 2 -b:a 64k -ar 44100
+video: -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 31 -b:v 600K -r 24 -g 72 -f hls -hls_time 10 -hls_list_size 9999 -s 640x360
+ffmpeg: ffmpeg
+ffmpeg_opts:
+ffmpeg_verb: -v 0
+
+#ffmpeg -y -i http://localhost:8090/livehq.flv 
+#-c:a libfdk_aac -ac 2 -b:a 64k -ar 44100 
+#-c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 31 -b:v 600K -r 24 -g 72 -f hls -hls_time 10 -hls_list_size 9999 -s 640x360 
+#test.m3u8
