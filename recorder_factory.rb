@@ -1,5 +1,5 @@
-require 'sunra_config/global'
-require 'sunra_config/recording'
+require 'sunra_utils/config/global'
+require 'sunra_utils/config/recording'
 
 require_relative 'recorder'
 
@@ -83,6 +83,8 @@ module Sunra
 
           return recorders
         end
+
+        private
       end
     end
   end

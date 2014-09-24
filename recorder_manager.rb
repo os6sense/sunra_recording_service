@@ -1,7 +1,7 @@
 # File:: Recorder_manager.rb
 
-require 'sunra_capture'
-require 'sunra_logging'
+require 'sunra_utils/capture'
+require 'sunra_utils/logging'
 
 module Sunra
   module Recording
@@ -120,10 +120,7 @@ module Sunra
 
         update_endtime
 
-        if errors.size > 0
-          raise RecorderError, errors
-        end
-
+        fail RecorderError, errors if errors.size > 0
       end
     end
   end

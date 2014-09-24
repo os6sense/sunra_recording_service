@@ -1,8 +1,8 @@
-#File:: recording_api.rb
+# File:: recording_api.rb
 require 'active_support/core_ext/module/delegation'
 
-require 'sunra_config/global'
-require 'sunra_logging'
+require 'sunra_utils/config/global'
+require 'sunra_utils/logging'
 
 require_relative 'recorder_factory'
 require_relative 'recorder_manager'
@@ -50,21 +50,21 @@ module Sunra
         @recorder_manager = Sunra::Recording::RecorderManager.new(rf)
       end
 
-
       # ==== Description
       # Start each of the configured recorders if not currently recording
       # otherwise return the current status. Several conditions may prevent
       # recording from starting:
+      #
       # 1) If there is a recording process already started
       # 2) If there is no booking/session scheduled - recordings MUST be
       #    attached to a booking.
-      # 3) if the ffserver is not currently running calls to start the
-      # recorder will fail.
+      # 3) if the ffserver is not currently running calls to start the recorder
+      #    will fail.
       # 4) If we fail to record the start in the db.
       #
       # ==== Returns
-      # Returns the result of a call to +status+ with the parameters
-      # SUCCESS or FAILURE
+      # Returns the result of a call to +status+ with the parameters SUCCESS or
+      # FAILURE
       def start
         @api_error = { loc: 'recording_api.start', msg: '' }
 
@@ -100,14 +100,12 @@ module Sunra
       # ==== Description
       # Helper Method.
       # Wraps a block, rescuing from the most common errors and logging them.
-      def safe_call(&block)
-        begin
-          yield
-        rescue Sunra::Recording::DB_PROXY::DB_PROXY_Error,
-               Sunra::Recording::RecorderManager::RecorderError,
-               APIError => e
-          _error e
-        end
+      def safe_call# (&block)
+        yield
+      rescue Sunra::Recording::DB_PROXY::DB_PROXY_Error,
+             Sunra::Recording::RecorderManager::RecorderError,
+             APIError => e
+        _error e
       end
 
       # ==== Description

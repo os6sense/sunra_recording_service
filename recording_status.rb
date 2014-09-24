@@ -1,4 +1,4 @@
-require 'sunra_capture'
+require 'sunra_utils/capture'
 
 module Sunra
   module Recording

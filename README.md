@@ -1,4 +1,7 @@
 
+Note that the recording service is not a standalone system but is part of the
+sunra collection of application.
+
 ==== Example of Recording Service Output While Recording
 {"studio_id":5,
   "project_id":"c704e899b838b7f98642af82a51a9c80b16fddbbc2da8579c87e9585ea153f8a19fded91",

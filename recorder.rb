@@ -1,6 +1,6 @@
 # File:: recorder.rb
 require 'active_support/core_ext/module/delegation'
-require 'sunra_capture'
+require 'sunra_utils/capture'
 
 module Sunra
   module Recording
@@ -82,7 +82,7 @@ module Sunra
         @_capturer.directory =
           "#{@config.storage_dir}/#{@project_id}/#{@booking_id}"
         @_capturer.directory +=
-          "/#{@config.add_dir}" unless @config.add_dir == ""
+          "/#{@config.add_dir}" unless @config.add_dir == ''
       end
     end
   end
