@@ -9,11 +9,12 @@ module Sunra
     # is wrapped here in a class which insulates it from some of the extranious
     # responsibilities it was aquiring.
     class Recorder
+      attr_reader :recording_number
+
       attr_accessor :project_id,
                     :booking_id,
                     :recording_id,
                     :format_id,
-                    :recording_number,
                     :_capturer
 
       # Instance variables
@@ -32,12 +33,19 @@ module Sunra
                :is_recording?,
                :to => :_capturer
 
+      # +block+ block will be called if the capture process terminates
       def initialize(config, &block)
-        # We use block.call(self) here deliberately so that we pass
-        # along a reference to the *recorder* and not just the *capturer*.
-        @_capturer = Sunra::Capture.new(config) { block.call(self) }
+        fail 'Configuration object is required' if config.nil?
+
         @config = config
         @recording_number = 0
+
+        # We use block.call(self) here deliberately so that we pass
+        # along a reference to the *recorder* and not just the *capturer*.
+        @_capturer = Sunra::Utils::Capture.new(config) do
+          block.call(self)
+        end
+
       end
 
       def status
@@ -71,7 +79,7 @@ module Sunra
 
         # Start is called with start time since this may differ from
         # the when the capture process starts by a few ms
-        @_capturer.start(Sunra::Capture.time_as_filename(start_time))
+        @_capturer.start(Sunra::Utils::Capture.time_as_filename(start_time))
       end
 
       protected

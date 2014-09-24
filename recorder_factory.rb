@@ -27,12 +27,20 @@ module Sunra
         # === Returns
         # An array of Recorder objects.
         def create(types = nil, &block)
-          types = Sunra::Config::Global.recording_formats if types.nil?
+          types = Sunra::Utils::Config::Global.recording_formats if types.nil?
 
           return create_from_types(types.map(&:upcase), [], &block)
         end
 
         protected
+
+        def create_from_type(recorders, type, &block)
+          recorders << Sunra::Recording::Recorder.new(
+            Object.const_get("Sunra::Utils::Config::Recording::#{type}")
+              .new(__dir__),
+            &block
+          )
+        end
 
         # ==== Description
         # Horrible name. Given an array containing a list of
@@ -53,38 +61,16 @@ module Sunra
         # An array of recorders.
         def create_from_types(types, recorders, &block)
           types.map!(&:upcase)
-          if types.include? 'MP3'
-            recorders << Sunra::Recording::Recorder.new(
-              Sunra::Config::Recording::MP3.new(__dir__),
-              &block
-            )
-          end
 
-          if types.include? 'MP4'
-            recorders << Sunra::Recording::Recorder.new(
-              Sunra::Config::Recording::MP4.new(__dir__),
-              &block
-            )
-          end
-
-          if types.include? 'MPG'
-            recorders << Sunra::Recording::Recorder.new(
-              Sunra::Config::Recording::MPG.new(__dir__),
-              &block
-            )
-          end
-
-          if types.include? 'HLS'
-            recorders << Sunra::Recording::Recorder.new(
-              Sunra::Config::Recording::HLS.new(__dir__),
-              &block
-            )
+          types.each do | type |
+            if %w(MP3 MP4 MPG HLS).include?(type)
+              create_from_type(recorders, type, &block)
+            end
           end
 
           return recorders
         end
 
-        private
       end
     end
   end

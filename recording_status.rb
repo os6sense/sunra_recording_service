@@ -19,7 +19,7 @@ module Sunra
         self[:studio_id]      = @_api.studio_id
         self[:project_id]     = @_api.project_id
         self[:booking_id]     = @_api.booking_id
-        self[:ffserver]       = Sunra::Capture.ffserver?
+        self[:ffserver]       = Sunra::Utils::Capture.ffserver?
         self[:is_recording]   = @_rm.is_recording?
         self[:start_time]     = @_rm.start_time
         self[:end_time]       = @_rm.end_time

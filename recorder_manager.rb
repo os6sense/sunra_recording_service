@@ -10,7 +10,7 @@ module Sunra
     # manages the collection of recorders.
     class Sunra::Recording::RecorderManager
 
-      include SunraLogging
+      include Sunra::Utils::Logging
 
       class RecorderError < StandardError; end
 

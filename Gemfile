@@ -10,15 +10,12 @@ gem 'sinatra-contrib'
 gem 'activesupport'
 gem 'rest-client'
 
-gem 'sunra_config'
-gem 'sunra_logging'
-gem 'sunra_capture'
+gem 'sunra_utils'
 
 group :development do
-#  gem 'rspec'
-#  gem 'capybara'
-#  gem 'therubyracer'
-#  gem 'guard'
-#  gem 'guard-rspec'
-#  gem 'thin'
+  gem 'capybara'
+  gem 'rspec'
+  gem 'guard'
+  gem 'guard-rspec'
+  gem 'thin'
 end

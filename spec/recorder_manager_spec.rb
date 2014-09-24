@@ -1,30 +1,33 @@
 require_relative '../recorder_manager'
 
-describe Sunra::Recording::RecorderManager do
-  let(:rm) {Sunra::Recording::RecorderManager.new}
+include Sunra::Recording
+
+def stub_datetime(dt)
+  allow(DateTime).to receive(:now).and_return(dt)
+end
+
+describe RecorderManager do
+  let(:rm) {RecorderManager.new}
 
   describe :initialize do
     it "takes an empty array as a parameter" do
-      Sunra::Recording::RecorderManager.new([]).should be
-        instance_of Sunra::Recording::RecorderManager
+      expect(RecorderManager.new([])).to be_kind_of RecorderManager
     end
 
     it "takes an array containing Sunra::Recorder object elements" do
       arr = [double("Sunra::Recorder"), double("Sunra::Recorder")]
-      Sunra::Recording::RecorderManager.new(arr).should be
-        instance_of Sunra::Recording::RecorderManager
+      expect(RecorderManager.new(arr)).to be_kind_of RecorderManager
     end
 
     it "can be called with no parameters" do
-      Sunra::Recording::RecorderManager.new.should be
-        instance_of Sunra::Recording::RecorderManager
+      expect(RecorderManager.new).to be_kind_of RecorderManager
     end
   end
 
   describe :add_recorder do
     it "allows the addition of a single recorder" do
       rm.add_recorder(double("Sunra::Recorder"))
-      rm.recorders.size.should eq 1
+      expect(rm.recorders.size).to eq 1
     end
   end
 
@@ -32,56 +35,56 @@ describe Sunra::Recording::RecorderManager do
     it "allows the addition of an array of multiple recorders" do
       rm.add_recorders([double("Sunra::Recorder"),
                         double("Sunra::Recorder")])
-      rm.recorders.size.should eq 2
+      expect(rm.recorders.size).to eq 2
     end
   end
 
   describe :recorders do
     it "returns the array of recorders" do
-      rm.recorders.should be_a Array
+      expect(rm.recorders).to be_a Array
     end
   end
 
   describe :duration do
     it "should equal 00:00:00 when first initialised" do
-      rm.duration.should eq "00:00:00"
+      expect(rm.duration).to eq "00:00:00"
     end
   end
 
   describe :is_recording? do
     it "should equal false when first initialised" do
-      rm.is_recording?.should eq false
+      expect(rm.is_recording?).to eq false
     end
 
     it "should return false if a recorder with pid = -1 is added" do
       rm.add_recorder double("Sunra::Recorder", pid: -1)
-      rm.is_recording?.should eq false
+      expect(rm.is_recording?).to eq false
     end
 
     it "should return true if a recorder with pid > -1 is added" do
       rm.add_recorder double("Sunra::Recorder", pid: 9999)
-      rm.is_recording?.should eq true
+      expect(rm.is_recording?).to eq true
     end
 
     it "should return false if ANY pids = -1" do
       rm.add_recorders([ double("Sunra::Recorder", pid: 9999),
                          double("Sunra::Recorder", pid: -1)
       ])
-      rm.is_recording?.should eq false
+      expect(rm.is_recording?).to eq false
     end
 
     it "should return true if ALL pids > -1" do
       rm.add_recorders([ double("Sunra::Recorder", pid: 9999),
                          double("Sunra::Recorder", pid: 9998)
       ])
-      rm.is_recording?.should eq true
+      expect(rm.is_recording?).to eq true
     end
   end
 
   describe :status do
     context "with no recorders" do
       it "should return an empty array" do
-        rm.status.should eq []
+        expect(rm.status).to eq []
       end
     end
   end
@@ -107,13 +110,13 @@ describe Sunra::Recording::RecorderManager do
       end
 
       it "returns true if all recorders start" do
-        rm.start_recorders(project_id, booking_id).should eq true
-        rm.start_time.should_not be nil
+        expect(rm.start_recorders(project_id, booking_id)).to eq true
+        expect(rm.start_time).to_not be nil
       end
 
       it "sets the end_time to nil" do
         rm.start_recorders(project_id, booking_id)
-        rm.end_time.should be nil
+        expect(rm.end_time).to be nil
       end
 
       it "raises RecorderError if any one recorder fails to start" do
@@ -121,30 +124,31 @@ describe Sunra::Recording::RecorderManager do
         expect{ rm.start_recorders(project_id, booking_id)}.to raise_error(Sunra::Recording::RecorderManager::RecorderError)
       end
 
+
       it "sets start_time to the value of DateTime.now" do
-        DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,11,12))
+        stub_datetime(DateTime.new(2014,1,1,10,11,12))
         rm.start_recorders(project_id, booking_id)
-        rm.start_time.should eq DateTime.new(2014,1,1,10,11,12)
+        expect(rm.start_time).to eq DateTime.new(2014,1,1,10,11,12)
       end
 
       describe :duration do
         it "reads 00:00:15 15 seconds after start" do
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,11,10))
-          rm.start_recorders(project_id, booking_id).should eq true
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,11,25))
-          rm.duration.should eq "00:00:15"
+          stub_datetime(DateTime.new(2014,1,1,10,11,10))
+          expect(rm.start_recorders(project_id, booking_id)).to eq true
+          stub_datetime(DateTime.new(2014,1,1,10,11,25))
+          expect(rm.duration).to eq "00:00:15"
         end
         it "reads 00:01:10 1 minute and 10 seconds after start" do
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,11,10))
-          rm.start_recorders(project_id, booking_id).should eq true
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,12,20))
-          rm.duration.should eq "00:01:10"
+          stub_datetime(DateTime.new(2014,1,1,10,11,10))
+          expect(rm.start_recorders(project_id, booking_id)).to eq true
+          stub_datetime(DateTime.new(2014,1,1,10,12,20))
+          expect(rm.duration).to eq "00:01:10"
         end
         it "reads 01:01:10 1 hour, 1 minute and 10 seconds after start" do
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,10,11,10))
-          rm.start_recorders(project_id, booking_id).should eq true
-          DateTime.stub(:now).and_return(DateTime.new(2014,1,1,11,12,20))
-          rm.duration.should eq "01:01:10"
+          stub_datetime(DateTime.new(2014,1,1,10,11,10))
+          expect(rm.start_recorders(project_id, booking_id)).to eq true
+          stub_datetime(DateTime.new(2014,1,1,11,12,20))
+          expect(rm.duration).to eq "01:01:10"
         end
       end
     end

@@ -16,7 +16,7 @@ module Sunra
     # recording process to be monitored. Primary purpose is to simplify
     # the seperate concerns of managing recording and updating the DB.
     class API
-      include SunraLogging
+      include Sunra::Utils::Logging
 
       class APIError < StandardError; end
 
