@@ -20,6 +20,9 @@ module Sunra
       helpers Sinatra::Passenger
 
       configure :production, :staging, :development do
+        puts "**********BLAH"
+        puts root
+        puts "**********IIII"
         set :logger, Sinatra::Passenger::Logger.new(root, environment)
       end
 
@@ -29,8 +32,6 @@ module Sunra
         super()
 
         @global_config = config
-
-        puts "API Key = #{@global_config.api_key}"
         @api = Sunra::Recording::API.new(
           Sunra::Recording::DB_PROXY.new(@global_config.api_key,
                                          @global_config.project_rest_api_url),

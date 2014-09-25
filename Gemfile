@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 # For cross origin resource sharing
-
 gem 'rack', '>= 1.4.5'
 gem 'rack-cors', :require => 'rack/cors'
 

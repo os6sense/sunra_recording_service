@@ -58,11 +58,9 @@ describe :recorder do
     end
 
     it 'increments the recording_number by 1' do
-      pending
     end
 
     it 'sets the directory to the correct value' do
-      pending
     end
   end
 end
