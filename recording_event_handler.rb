@@ -1,54 +1,29 @@
-
 module Sunra
   module Recording
-    # Base class
-    class RecordingEventHandler
-      def starting
-        fail "Not Implemented"
+    # The null handler is there to simply ignore any calls
+    class NullRecordingEventHandler
+      def initialize(*_args)
       end
 
       def started
-        fail "Not Implemented"
-      end
-
-      def error
-        fail "Not Implemented"
-      end
-
-      def stopping
-        fail "Not Implemented"
       end
 
       def stopped
-        fail "Not Implemented"
+      end
+
+      def error
+      end
+
+      def stopping
+      end
+
+      def stopped
       end
     end
 
-    class NullRecordingEventHandler < RecordingEventHandler
-      def initialize(*args); end
-      def started; end
-      def stopped; end
-      def error; end
-      def stopping; end
-      def stopped; end
-    end
-
-    class IDProvider
-      attr_accessor :project_id,
-                    :booking_id,
-                    :recording_id,
-                    :studio_id
-
-      def initialize(studio_id: nil, booking_id: nil,
-                     recording_id: nil, project_id: nil)
-        @studio_id = studio_id
-        @booking_id = booking_id
-        @project_id = project_id
-        @recording_id = recording_id
-      end
-    end
-
-    class DBRecordingEventHandler < RecordingEventHandler
+    # Calls are made via the proxy to manage the updating of informatio
+    # on the project manager.
+    class DBRecordingEventHandler
       def initialize(db_proxy, id_provider)
         @id_provider, @db_proxy = id_provider, db_proxy
       end

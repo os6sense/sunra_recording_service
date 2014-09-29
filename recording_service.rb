@@ -3,6 +3,7 @@ require 'sinatra'
 
 require_relative 'recording_event_handler'
 require_relative 'recording_api'
+require_relative 'id_provider'
 
 require_relative '../../lib/sinatra_passenger'
 require_relative '../../lib/recording_db_proxy'
@@ -28,21 +29,12 @@ module Sunra
 
       def initialize(config)
         super()
-
-        @config = config
-
-        DB_PROXY.new(@config.api_key,
-                     @config.project_rest_api_url).tap do | proxy |
-          IDProvider.new(studio_id: @config.studio_id).tap do | provider |
-            DBRecordingEventHandler.new(proxy, provider).tap do | handler |
-              @api = Sunra::Recording::API.new(handler, provider)
-            end
-          end
-        end
+        @api = create_api(config)
+        @api_key = config.api_key
       end
 
       def validate_api_key(key)
-        halt 401, { unauthorized: '401' }.to_json if @config.api_key != key
+        halt 401, { unauthorized: '401' }.to_json if @api_key != key
       end
 
       get '/' do
@@ -69,7 +61,32 @@ module Sunra
 
       # Make the studio_id available via a simple json call
       get '/studio_id' do
-        "{studio_id: #{@config.studio_id}}"
+        "{studio_id: #{@api.studio_id}}"
+      end
+
+      private
+
+      def create_api(config)
+        create_proxy(config).tap do | proxy |
+          create_provider(config).tap do | provider |
+            create_event_handler(proxy, provider).tap do | handler |
+              return Sunra::Recording::API.new(handler, provider)
+            end
+          end
+        end
+      end
+
+      def create_proxy(config)
+        DB_PROXY.new(config.api_key, config.project_rest_api_url)
+      end
+
+
+      def create_event_handler(proxy, provider)
+        DBRecordingEventHandler.new(proxy, provider)
+      end
+
+      def create_provider(config)
+        IDProvider.new(studio_id: config.studio_id)
       end
     end
   end
