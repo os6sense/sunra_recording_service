@@ -20,12 +20,14 @@ module Sunra
 
       class APIError < StandardError; end
 
-      attr_reader :project_id,
-                  :booking_id,
-                  :recording_id,
-                  :studio_id,
-                  :api_error,
+      attr_reader :api_error,
                   :recorder_manager
+
+      delegate :project_id,
+               :booking_id,
+               :recording_id,
+               :studio_id,
+               to: :@id_provider
 
       delegate :add_recorder,
                :add_recorders,
@@ -39,15 +41,18 @@ module Sunra
       # ==== Params
       # +db_api+ :: dbi_api to use to update the databae
       # +studio_id+ :: ID of the studio doing the recording
-      def initialize(db_api, studio_id)
-        @_db_api = db_api
-        @studio_id = studio_id
+      # def initialize(db_api, studio_id)
+      def initialize(recording_event_handler, id_provider)
+        @recording_event_handler = recording_event_handler
+        @id_provider = id_provider
+
         @api_error = { loc: '', msg: '' }
 
-        rf = Sunra::Recording::RecorderFactory.create do | recorder |
+        rf = RecorderFactory.create do | recorder |
           _handle_recorder_stopped(recorder)
         end
-        @recorder_manager = Sunra::Recording::RecorderManager.new(rf)
+
+        @recorder_manager = RecorderManager.new(rf)
       end
 
       # ==== Description
@@ -72,12 +77,9 @@ module Sunra
           fail(APIError,
                'Call to start while recording in progress!') if is_recording?
 
-          @project_id, @booking_id = @_db_api.get_current_booking(@studio_id)
+          @recording_event_handler.starting
           @recorder_manager.start_recorders(project_id, booking_id)
-
-          # TODO: Move to recorder
-          @recording_id = @_db_api.start_new_recording(
-            @project_id, @booking_id, @recorder_manager.recorders)
+          @recording_event_handler.started(@recorder_manager.recorders)
         end
         return status
       end
@@ -109,19 +111,19 @@ module Sunra
       end
 
       # ==== Description
-      # A black which calls this is passed to the recorder (via the factory)
+      # A block which calls this is passed to the recorder (via the factory)
       # in our initialize method. This method is then called IF any single
       # recorder stops.
       def _handle_recorder_stopped(recorder)
         @api_error = { loc: 'recording_api.stop', msg: '' }
 
         # update the format
-        @_db_api.update_format(recorder)
+
+        @recording_event_handler.stopping(recorder)
 
         # if all the individual recorders have been stopped update the db
         if @recorder_manager.recorders.all? { | rec | !rec.is_recording? }
-          @_db_api.stop_recording(@project_id, @booking_id, @recording_id,
-                                  @recorder_manager.recorders)
+          @recording_event_handler.stopper(@recorder_manager.recorders)
           @recorder_manager.update_endtime
         end
       end

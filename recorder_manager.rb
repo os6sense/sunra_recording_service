@@ -55,9 +55,8 @@ module Sunra
         Time.at(d).utc.strftime '%H:%M:%S'
       end
 
-      # +project_id+ and +booking_id+
-      # are combined to create the directory name into
-      # which recordings will be placed
+      # +project_id+ and +booking_id+ # are combined to create the directory
+      # name into which recordings will be placed
       def start_recorders(project_id, booking_id)
         # Provide a more granular error if recording is attempted without
         # any recorders defined.

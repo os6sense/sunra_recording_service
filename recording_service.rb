@@ -1,6 +1,7 @@
 require 'json'
 require 'sinatra'
 
+require_relative 'recording_event_handler'
 require_relative 'recording_api'
 
 require_relative '../../lib/sinatra_passenger'
@@ -20,9 +21,6 @@ module Sunra
       helpers Sinatra::Passenger
 
       configure :production, :staging, :development do
-        puts "**********BLAH"
-        puts root
-        puts "**********IIII"
         set :logger, Sinatra::Passenger::Logger.new(root, environment)
       end
 
@@ -31,18 +29,20 @@ module Sunra
       def initialize(config)
         super()
 
-        @global_config = config
-        @api = Sunra::Recording::API.new(
-          Sunra::Recording::DB_PROXY.new(@global_config.api_key,
-                                         @global_config.project_rest_api_url),
-          @global_config.studio_id
-        )
+        @config = config
+
+        DB_PROXY.new(@config.api_key,
+                     @config.project_rest_api_url).tap do | proxy |
+          IDProvider.new(studio_id: @config.studio_id).tap do | provider |
+            DBRecordingEventHandler.new(proxy, provider).tap do | handler |
+              @api = Sunra::Recording::API.new(handler, provider)
+            end
+          end
+        end
       end
 
       def validate_api_key(key)
-        if @global_config.api_key != key
-          halt 401, { unauthorized: '401' }.to_json
-        end
+        halt 401, { unauthorized: '401' }.to_json if @config.api_key != key
       end
 
       get '/' do
@@ -69,7 +69,7 @@ module Sunra
 
       # Make the studio_id available via a simple json call
       get '/studio_id' do
-        "{studio_id: #{@global_config.studio_id}}"
+        "{studio_id: #{@config.studio_id}}"
       end
     end
   end
