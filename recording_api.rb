@@ -118,7 +118,6 @@ module Sunra
         @api_error = { loc: 'recording_api.stop', msg: '' }
 
         # update the format
-
         @recording_event_handler.stopping(recorder)
 
         # if all the individual recorders have been stopped update the db

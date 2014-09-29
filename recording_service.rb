@@ -1,6 +1,8 @@
 require 'json'
 require 'sinatra'
 
+require 'sunra_utils/config/recording'
+
 require_relative 'recording_event_handler'
 require_relative 'recording_api'
 require_relative 'id_provider'
@@ -27,10 +29,10 @@ module Sunra
 
       set :project_id, 0
 
-      def initialize(config)
+      def initialize(global_config)
         super()
-        @api = create_api(config)
-        @api_key = config.api_key
+        @api = create_api(global_config)
+        @api_key = global_config.api_key
       end
 
       def validate_api_key(key)
@@ -76,17 +78,28 @@ module Sunra
         end
       end
 
-      def create_proxy(config)
-        DB_PROXY.new(config.api_key, config.project_rest_api_url)
+      # creates an instance
+      def _obj(class_name)
+        @_service ||= Object
+          .const_get('Sunra::Utils::Config::Recording::Service')
+        @_service.send(class_name).tap do | cls |
+          return Object.const_get("#{cls}")
+        end
       end
 
+      def create_proxy(config)
+        _obj('proxy_class').new(config.api_key,
+                                config.project_rest_api_url)
+      end
 
       def create_event_handler(proxy, provider)
-        DBRecordingEventHandler.new(proxy, provider)
+        _obj('event_handler_class').new(proxy, provider)
+        #DBRecordingEventHandler.new(proxy, provider)
       end
 
       def create_provider(config)
-        IDProvider.new(studio_id: config.studio_id)
+        _obj('provider_class').new(studio_id: config.studio_id)
+        #IDProvider.new(studio_id: config.studio_id)
       end
     end
   end

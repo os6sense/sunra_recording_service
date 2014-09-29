@@ -1,0 +1,3 @@
+provider_class: Sunra::Recording::IDProvider
+event_handler_class: Sunra::Recording::DBRecordingEventHandler
+proxy_class: Sunra::Recording::DB_PROXY
