@@ -1,5 +1,5 @@
 
 DONE: update to use sunra utils
 logging should be in the log dir, not the apache log.
-make the service none dependent on the project-manager
+DONE: Needs tests. make the service none dependent on the project-manager
 a html5 UI would be nice
