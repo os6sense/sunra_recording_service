@@ -104,7 +104,7 @@ module Sunra
       # Wraps a block, rescuing from the most common errors and logging them.
       def safe_call# (&block)
         yield
-      rescue Sunra::Recording::DB_PROXY::DB_PROXY_Error,
+      rescue Sunra::Utils::Recording::DBProxy::DBProxyError,
              Sunra::Recording::RecorderManager::RecorderError,
              APIError => e
         _error e
@@ -122,7 +122,7 @@ module Sunra
 
         # if all the individual recorders have been stopped update the db
         if @recorder_manager.recorders.all? { | rec | !rec.is_recording? }
-          @recording_event_handler.stopper(@recorder_manager.recorders)
+          @recording_event_handler.stopped(@recorder_manager.recorders)
           @recorder_manager.update_endtime
         end
       end

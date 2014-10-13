@@ -31,7 +31,7 @@ module Sunra
       # We use this to set up the booking and project ids
       def starting
         @id_provider.project_id,
-        @id_provider.booking_id = @db_proxy.get_current_booking(@studio_id)
+          @id_provider.booking_id = @db_proxy.get_current_booking(@studio_id)
       end
 
       def started(recorders)
@@ -51,7 +51,7 @@ module Sunra
       def stopped(recorders = nil)
         @db_proxy.stop_recording(@id_provider.project_id,
                                  @id_provider.booking_id,
-                                 @id_provide.recording_id,
+                                 @id_provider.recording_id,
                                  recorders)
       end
     end

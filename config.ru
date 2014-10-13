@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rack/cors'
 require 'sinatra'
-require 'sunra_config/global'
+require 'sunra_utils/config/global'
 
 require File.expand_path("../recording_service", __FILE__)
 
@@ -25,4 +25,4 @@ use Rack::Cors do |config|
   end
 end
 
-run Sunra::Recording::Service.new(Sunra::Config::Global)
+run Sunra::Recording::Service.new(Sunra::Utils::Config::Global)

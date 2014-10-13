@@ -67,9 +67,9 @@ describe Sunra::Recording::API do
   #  @api.is_recording?).to eq true
   #end
 
-  it 'provides a method #studio_id which returns the studio_id from the config file' do
-    expect(@api.studio_id).to eq 1
-  end
+  #it 'provides a method #studio_id which returns the studio_id from the config file' do
+    #expect(@api.studio_id).to eq 1
+  #end
 
   it 'returns a duration of 00:00:00 if start_time is nil' do
     expect(@api.duration).to eq '00:00:00'

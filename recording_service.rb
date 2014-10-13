@@ -2,13 +2,12 @@ require 'json'
 require 'sinatra'
 
 require 'sunra_utils/config/recording'
+require 'sunra_utils/recording_db_proxy'
+require 'sunra_utils/logging/passenger/sinatra'
 
 require_relative 'recording_event_handler'
 require_relative 'recording_api'
 require_relative 'id_provider'
-
-require_relative '../../lib/sinatra_passenger'
-require_relative '../../lib/recording_db_proxy'
 
 module Sunra
   module Recording
@@ -21,10 +20,10 @@ module Sunra
     # +stop+ will stop any recordings.
     # +status+ will provide information about the current state of the service.
     class Service < Sinatra::Base
-      helpers Sinatra::Passenger
+      helpers Sunra::Utils::Logging::Passenger::Sinatra
 
       configure :production, :staging, :development do
-        set :logger, Sinatra::Passenger::Logger.new(root, environment)
+        set :logger, Sunra::Utils::Logging::Passenger::Sinatra::Logger.new(root, environment)
       end
 
       set :project_id, 0
@@ -94,12 +93,10 @@ module Sunra
 
       def create_event_handler(proxy, provider)
         _obj('event_handler_class').new(proxy, provider)
-        #DBRecordingEventHandler.new(proxy, provider)
       end
 
       def create_provider(config)
         _obj('provider_class').new(studio_id: config.studio_id)
-        #IDProvider.new(studio_id: config.studio_id)
       end
     end
   end
