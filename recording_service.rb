@@ -35,8 +35,6 @@ module Sunra
       end
 
       def validate_api_key(key)
-        puts @api_key
-        puts "'''''''''"
         halt 401, { unauthorized: '401' }.to_json if @api_key != key
       end
 
@@ -57,6 +55,7 @@ module Sunra
         halt @api.stop.to_json
       end
 
+      # TODO - HTML version to aid in control and debugging
       get '/status/*' do
         validate_api_key(params[:api_key])
         halt @api.status.to_json
