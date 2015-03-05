@@ -26,6 +26,7 @@ module Sunra
     class DBRecordingEventHandler
       def initialize(db_proxy, id_provider)
         @id_provider, @db_proxy = id_provider, db_proxy
+        @auto_upload = Sunra::Utils::Config::Recording::Service.auto_upload
       end
 
       # We use this to set up the booking and project ids
@@ -45,7 +46,9 @@ module Sunra
       end
 
       def stopping(recorder = nil)
-        @db_proxy.update_format(recorder) unless recorder.nil?
+        upload = @auto_upload.include?(recorder.format)
+
+        @db_proxy.update_format(recorder, upload) unless recorder.nil?
       end
 
       def stopped(recorders = nil)

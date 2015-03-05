@@ -15,6 +15,13 @@ module Sunra
     # Provide a webservice (json interface only) allowing for calls to start
     # and stop recordings locally.
     #
+    # To access any service the api_key must be known and must correspond to
+    # the authentication_token of an admin for the project management system
+    # (see project_manager Admin). The api_key should be appended to the
+    # service call e.g.
+    #
+    # http://localhost/recording_service/status/?api_key=cRTrnQPqTyazBmNnPxrV
+    #
     # +start+ will call the recording api # to launch multiple capture clients
     # in mpX formats.
     # +stop+ will stop any recordings.
