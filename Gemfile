@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 
-# For cross origin resource sharing
+gem 'sunra_utils', '~> 0.1.8', git: 'https://github.com/os6sense/sunra_utils.git'
+
 gem 'rack', '>= 1.4.5'
-gem 'rack-cors', :require => 'rack/cors'
+gem 'rack-cors', require: 'rack/cors'
 
 gem 'sinatra'
 gem 'sinatra-contrib'
