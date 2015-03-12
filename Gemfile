@@ -10,8 +10,6 @@ gem 'sinatra-contrib'
 gem 'activesupport'
 gem 'rest-client'
 
-gem 'sunra_utils'
-
 group :development do
   gem 'capybara'
   gem 'rspec'
